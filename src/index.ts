@@ -5,6 +5,7 @@ import hotelsRouter from "./api/hotel";
 import connectDB from "./infrastructure/db";
 import usersRouter from "./api/user";
 import bookingRouter from "./api/booking";
+import globalErrorHandlingMiddleware from "./api/middleware/global-error-handling-middleware";
 
 const app= express();
 
@@ -16,6 +17,8 @@ connectDB();
 app.use("/api/hotels",hotelsRouter)
 app.use("/api/users",usersRouter)
 app.use('/api/bookings', bookingRouter)
+
+app.use(globalErrorHandlingMiddleware)
 
 const PORT = 3000;
 app.listen(PORT, () => {

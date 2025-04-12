@@ -1,38 +1,55 @@
-import { Request,Response } from "express";
+import { Request, Response, NextFunction } from "express";
+
 import Booking from "../infrastructure/schemas/Booking";
+import ValidationError from "../domain/errors/validation-error";
 
-export const createBooking=async(req: Request,res: Response)=>{
-    const booking=req.body;
+export const createBooking = async (req: Request,res: Response,next: NextFunction) => {
+  try {
+    const booking = req.body;
 
-    if(!booking.hotelId || !booking.userId || !booking.checkIn || !booking.checkOut || !booking.roomNumber){
-        return res.status(400).send();
+    if (
+      !booking.hotelId ||
+      !booking.userId ||
+      !booking.checkIn ||
+      !booking.checkOut ||
+      !booking.roomNumber
+    ) {
+        throw new ValidationError('Invalid booking data');
     }
 
     await Booking.create({
-        hotelId:booking.hotelId,
-        userId:booking.userId,
-        checkIn:booking.checkIn,
-        checkOut:booking.checkOut,
-        roomNumber: booking.roomNumber
+      hotelId: booking.hotelId,
+      userId: booking.userId,
+      checkIn: booking.checkIn,
+      checkOut: booking.checkOut,
+      roomNumber: booking.roomNumber,
     });
 
-    return res.status(201).send();
-}
+    res.status(201).send();
+    return;
+  } catch (error) {
+    next(error);
+  }
+};
 
-export const getAllBookings=async(req:Request,res:Response)=>{
+export const getAllBookingsForHotel = async (req: Request,res: Response, next: NextFunction) => {
+  try {
+    const hotelId = req.params.hotelId;
+    const bookings = await Booking.find({ hotelId: hotelId }).populate("userId");
+
+    res.status(200).json(bookings);
+    return;
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAllBookings = async (req: Request,res: Response,next: NextFunction) => {
+  try {
     const bookings = await Booking.find();
-    return res.status(200).json(bookings);
-}
-
-export const getAllBookingsForHotel=async(req:Request,res:Response)=>{
-    const hotelId=req.params.hotelId;
-
-    const hotel= await Booking.find({hotelId}).populate("userId").populate("hotelId");
-
-    if(!hotel){
-        return res.status(404).send();
-    }
-
-    res.status(200).json(hotel);
-
-}
+    res.status(200).json(bookings);
+    return;
+  } catch (error) {
+    next(error);
+  }
+};

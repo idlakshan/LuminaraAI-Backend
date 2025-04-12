@@ -1,19 +1,24 @@
-import { Request,Response } from "express";
-import User from '../infrastructure/schemas/User'
+import { Request, Response, NextFunction } from "express";
 
-export const createUser = async (req:Request,res:Response) => {
+import User from "../infrastructure/schemas/User";
+import ValidationError from "../domain/errors/validation-error";
+
+export const createUser = async (req: Request,res: Response,next: NextFunction) => {
+  try {
     const user = req.body;
 
     if (!user.name || !user.email) {
-        return res.status(400).send();
+      throw new ValidationError("Invalid user data");
     }
-  
-     await User.create({
-        name:user.name,
-        email:user.email
+
+    await User.create({
+      name: user.name,
+      email: user.email,
     });
 
-    return res.status(201).send();
-    
-}
-
+    res.status(201).send();
+    return;
+  } catch (error) {
+    next(error);
+  }
+};
