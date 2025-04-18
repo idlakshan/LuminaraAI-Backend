@@ -9,7 +9,7 @@ import globalErrorHandlingMiddleware from "./api/middleware/global-error-handlin
 
 const app= express();
 
-app.use(express.json());
+app.use(express.json({ limit: "25mb" }));
 app.use(cors());
 
 connectDB();
@@ -20,7 +20,7 @@ app.use('/api/bookings', bookingRouter)
 
 app.use(globalErrorHandlingMiddleware)
 
-const PORT = 3000;
+const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

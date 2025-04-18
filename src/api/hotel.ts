@@ -5,7 +5,7 @@ const hotelsRouter=express.Router();
 
 hotelsRouter.get("/",getAllHotels);
 hotelsRouter.get("/:id",getHotelById);
-hotelsRouter.post("/",createHotel);
+hotelsRouter.post("/", createHotel);
 hotelsRouter.put("/:id",updateHotel);
 hotelsRouter.delete("/:id",deleteHotel);
 
