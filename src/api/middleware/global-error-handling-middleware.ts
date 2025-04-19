@@ -10,6 +10,16 @@ const globalErrorHandlingMiddleware = (error: Error,req: Request,res: Response,n
     res.status(400).json({ message: error.message });
     return;
   }
+  if (error.name === "UnauthorizedError") {
+    res.status(401).json({ message: error.message });
+    return;
+  }
+  if (error.name === "ForbiddenError") {
+    res.status(403).json({ message: error.message });
+    return;
+  }
+
+  
   res.status(500).json({ message: "Internal Server Error" });
 };
 
